@@ -1,0 +1,167 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% load i18n %}
+{% block title %}Registro Solicitudes{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Mis Solicitudes</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'adminInicio' %}">Home</a></li>
+                        <li class="breadcrumb-item active">Solicitudes</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Foto</th>
+                                <th>Visitante</th>
+                                <th>Motivo</th>
+                                <th class="text-center">Fecha de registro</th>
+                                <th class="text-center">Fecha reservada</th>
+                                <th>Horario</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>   
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in solicitudes %}   
+                            <tr>
+                                <td class="text-center pt-1 align-middle">{{forloop.counter}}</td>
+                                <td class="text-center align-middle">
+                                    <img src="../media/{{s.id_visitante.id_persona.avatar}}" class="img-circle " style="max-width: 40px;">
+                                </td>
+                                <td class="pt-1 align-middle">{{s.id_visitante.id_persona.nombres|title}} {{s.id_visitante.id_persona.apellidos|title}}</td>
+                                <td class="pt-1 align-middle">{{s.motivo|title}}</td>
+                                <td class="pt-1 align-middle">{{s.fecha|date:"Y-m-d"}}</td>
+                                <td class="pt-1 align-middle">{{s.fecha_reservada|date:"Y-m-d"}}</td>
+                                <td class="pt-1 align-middle">{{s.horario}}</td>
+                                <td class="pt-1 align-middle">
+                                    {% if s.estado_solicitud == 'pendiente'%}
+                                        <span class="badge bg-warning text-white">{{s.estado_solicitud|title}}</span>
+                                    {% elif s.estado_solicitud == 'aprobado'%}
+                                        <span class="badge bg-success">{{s.estado_solicitud|title}}</span>
+                                    {% elif s.estado_solicitud == 'rechazado'%}
+                                        <span class="badge bg-danger">{{s.estado_solicitud|title}}</span>
+                                    {% elif s.estado_solicitud == 'procesado'%}
+                                        <span class="badge bg-primary">{{s.estado_solicitud|title}}</span>
+                                    {% else %}
+                                        <span class="badge bg-info">{{s.estado_solicitud|title}}</span>
+                                    {%endif%}
+                                </td>                  
+                                {% if s.estado_solicitud == 'pendiente' %}
+                                <td class="pt-1 align-middle">
+                                    <div class="d-flex gap-1 justify-content-center" >
+                                        <a href="/aprobarSolicitud/{{ s.id }}" class="btn btn-sm btn-success separacion mr-1 ">Aprobar</i></a>
+                                        
+                                        <a href="#" onclick="confirmarRechazo('/rechazarSolicitud/{{ s.id }}')" class="btn btn-sm btn-danger" class="btn btn-sm btn-danger btnEliminacion">Rechazar</a>
+                                    </div>
+                                </td>
+                                {% else %}
+                                <td class="pt-1 align-middle text-center">
+                                    <span class="badge bg-info">Sin acciones necesarias</span>
+                                </td>
+                                {% endif %}                                            
+                            </tr>
+                            {% endfor %}                  
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+{% endblock %}
+
+{% block datatables %}
+<script>
+    $(function () {
+        // Configuración de DataTable
+        $("#example1").DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "buttons": ["copy"],
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "lengthMenu": [[5, 10, 25, 50,],[5, 10, 25, 50,]],
+            "pageLength": 5,
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+        // Ocultar todos los botones excepto el botón "colvis"
+        $('div.dt-buttons > button').not('.buttons-colvis').css('display', 'none');
+
+        // Obtener el contenedor de botones
+        var buttonContainer = $("#example1_wrapper .col-md-6:eq(0)").find('.btn-group');
+
+        // Quitar la clase 'btn-group' de todos los botones
+        buttonContainer.removeClass('btn-group');
+
+        // Agregar la clase 'btn' a cada botón
+        buttonContainer.find('button').addClass('btn btn-round');
+
+        // Añadir un margen a los botones para separarlos
+        buttonContainer.find('button').css('margin-right',);
+
+        const select = document.getElementById("horario");
+        select.addEventListener("mousedown", function(event) {
+            event.preventDefault();
+            
+            const select = this;
+            const scroll = select.scrollTop;
+            
+            event.target.selected = !event.target.selected;
+            
+            setTimeout(function() {
+                select.scrollTop = scroll;
+            }, 0);
+            
+            select.focus();
+        });
+    });
+
+</script>
+
+<script>
+    // Función para mostrar la alerta de confirmación antes de eliminar un dato
+    function confirmarRechazo(url) {
+        Swal.fire({
+            icon: 'warning',
+            title: '¿Estás seguro?',
+            text: 'Esta acción rechazara el dato de forma permanente.',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, rechazar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si el usuario confirma, redireccionar a la URL de eliminación
+                window.location.href = url;
+            }
+        });
+    }
+</script>
+{% endblock %}

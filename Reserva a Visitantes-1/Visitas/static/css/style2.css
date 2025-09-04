@@ -1,0 +1,65 @@
+
+/* formulario de turno */
+.navbar {
+    background-color: #1C3247!important; 
+}
+
+.btn-outline-light  {
+    border-color: #FE9900;
+    color: #FE9900;
+}
+
+.btn-outline-light:hover {
+    background-color: #FE9900;
+    color: #fff;
+}
+.btn-outline-secondary{
+    border-color: #FE9900;
+    color: #FE9900;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #FE9900;
+    color: #fff;
+}
+
+
+
+
+.btn-secondary{
+    border-color: #FE9900;
+    background-color: #fff;
+    color: #1C3247;
+}
+
+.btn-secondary1{
+    border-color: #FE9900;
+    background-color: #FE9900;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    border-color: #FE9900;
+    background-color: #FE9900;
+    color: #fff;
+}
+
+.footer {
+    
+    background-color: #E4EDF5;
+
+    position: absolute;
+    padding-top: 10px;
+    bottom: 0;
+    width: 100%;
+
+    font-size: 13px;
+    
+  }
+  
+.footer-text {
+    font-size: 13px;
+    color: #1C3247;
+    font-weight: bold;
+}
+  

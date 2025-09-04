@@ -1,0 +1,95 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% block title %}Registro de ingreso de visitantes{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Registro de ingreso de visitantes</h1>
+                </div>
+                
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+
+    <!-- Main content -->
+
+    <section class="content">
+        <div class="container-fluid">
+
+            
+            <div class="card">
+               
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center" >#</th>
+                                <th class="text-center">Foto</th>
+                                <th>Visitante</th>
+                                <th>Fecha de ingreso</th>
+                                <th>Hora de ingreso</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for h in historial %}
+                            <tr>
+                                <td class="text-center pt-3">{{forloop.counter}}</td> 
+                                <td class="text-center align-middle">
+                                    <img src="../media/{{h.id_solicitud.id_visitante.id_persona.avatar}}" class="img-circle " style="max-width: 40px;">
+                                </td>
+                                <td class="pt-1 align-middle ">{{h.id_solicitud.id_visitante.id_persona.nombres|title}} {{h.id_solicitud.id_visitante.id_persona.apellidos|title}}</td>
+                                <td class="pt-1 align-middle ">{{ h.fecha_ingreso|date:"Y-m-d" }}</td>
+                                <td class="pt-1 align-middle ">{{ h.fecha_ingreso|date:"h:i A"  }}</td>
+                                <td class="pt-1 align-middle text-center"><span class="badge bg-success">{{h.id_solicitud.estado_solicitud|title}}</span></td>
+                                  
+                            </tr>
+                            {% endfor %}
+                            
+                        </tbody>
+
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+
+
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+
+</div>
+{% endblock %}
+
+{% block datatables %}
+<script>
+
+    $(function () {
+        // Configuración de DataTable
+        $("#example1").DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "lengthMenu": [[5, 10, 25, 50,],[5, 10, 25, 50,]],
+            "pageLength": 5,
+        })
+
+
+
+    });
+
+</script>
+{% endblock %}

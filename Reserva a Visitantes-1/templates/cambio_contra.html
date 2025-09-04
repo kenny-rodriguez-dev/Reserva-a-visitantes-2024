@@ -1,0 +1,112 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% block title %}Edcion Contraseña{% endblock %}
+
+{% block content %}
+<style>
+    .password-container {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+
+    .error-message {
+        color: red;
+    }
+</style>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Actualización de Contraseña</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Cambiar Contraseña</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">     
+            <div class="card">
+                <div class="card-body">
+                    <form  action="/editarContraseña/{{user.username}}" method="post"
+                            enctype="multipart/form-data"onsubmit="return validateForm()"enctype="multipart/form-data">{% csrf_token %}
+                            <div class="row d-none">
+                                <div class="form-group">
+                                    <label for="" class="d-none">ID</label>
+                                    <input type="text" name="funcionarioid" id="funcionarioid" class="form-control d-none" value="{{cargo.id }}" readonly required>
+                                </div>
+                            </div>
+                            <!-- Nombre y Apellido -->
+                            <div class="row">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                      <div class="input-group-text">
+                                        <span class="fas fa-lock"></span>
+                                      </div>
+                                    </div>
+                                    <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña" required>
+                                    <span class="toggle-password" onclick="togglePasswordVisibility('password')">Mostrar</span>
+                                  </div>
+                                  <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                      <div class="input-group-text">
+                                        <span class="fas fa-lock"></span>
+                                      </div>
+                                    </div>
+                                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Repite la Contraseña" required>
+                                    <span class="toggle-password " onclick="togglePasswordVisibility('confirmPassword')">Mostrar</span>
+                                  </div>
+                                  <p class="error-message" id="passwordError"></p>
+                            </div>
+                            <a href="/verUsuario/{{user.username}}" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Actualizar</button>
+                            <script>
+                                function togglePasswordVisibility(fieldId) {
+                                  var passwordInput = document.getElementById(fieldId);
+                                  var toggleButton = document.querySelector(".toggle-password");
+                            
+                                  if (passwordInput.type === "password") {
+                                    passwordInput.type = "text";
+                                    toggleButton.textContent = "Ocultar";
+                                  } else {
+                                    passwordInput.type = "password";
+                                    toggleButton.textContent = "Mostrar";
+                                  }
+                                }
+                            
+                                function validateForm() {
+                                  var password = document.getElementById("password").value;
+                                  var confirmPassword = document.getElementById("confirmPassword").value;
+                                  var passwordError = document.getElementById("passwordError");
+                            
+                                  if (password !== confirmPassword) {
+                                    passwordError.textContent = "Las contraseñas no coinciden.";
+                                    return false;
+                                  } else {
+                                    passwordError.textContent = "";
+                                    return true;
+                                  }
+                                }
+                            </script>
+                        </form>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+{% endblock %}

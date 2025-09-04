@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Registro{% endblock %}</title>
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
+    <!-- SweetAlert2 para alertas atractivas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+    
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static 'js/datatables/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'js/datatables/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'js/datatables/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{% static 'js/select2/css/select2.min.css' %}">
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="{% static 'css/tempusdominus-bootstrap-4.min.css' %}">
+    
+    <!-- Mi estilo -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
+    {% block estilo %}
+    
+    {% endblock %}
+</head>
+
+<body class="hold-transition sidebar-mini">
+    <!-- Site wrapper -->
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- User Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <img src="{% static 'img/user2-160x160.jpg' %}" class="img-fluid img-circle img-sm "
+                            alt="User Image" style="width: 25px; height: 25px;">
+                        <span class="d-none d-sm-inline align-middle ml-2">{{ user.first_name }} {{ user.last_name }} </span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                        {% if user.is_superuser %}
+                        {% else %}
+                            <a href="/verUsuario/{{user.username}}" class="dropdown-item">
+                                <i class="fas fa-user mr-2"></i> Perfil
+                            </a>
+                            <a href="/contraUsuario/{{user.username}}" class="dropdown-item">
+                                <span class="fas fa-lock"></span> Cambio de contraseña
+                            </a>
+                        {% endif %}
+
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logout' %}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4 nuevo">
+            <!-- Brand Logo -->
+            <a href="#" class="brand-link">
+                <img src="{% static 'img/LOGO-WEB-BLANCO.png' %}" alt="AdminLTE Logo" class="brand-image">
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        {% if user.is_superuser %}
+                        {% else %}
+                            <li class="nav-item">
+                                <a href="{% url 'adminInicio' %}" class="nav-link">
+                                    <i class="nav-icon fas fa-house"></i>
+                                    <p>Inicio</p>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                        <!-- Contenido solo para el grupo ADMINISTRADOR-->
+                        <li class="nav-item">
+                            <a href="{% url 'adminCargo' %}" class="nav-link">
+                                <i class="nav-icon fas fa-briefcase"></i>
+                                <p>Cargo</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'adminHorario' %}" class="nav-link">
+                                <i class="nav-icon far fa-clock"></i>
+                                <p>Horario</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if request.user.groups.all.0.name == "GUARDIA" or user.is_superuser %}
+                        <!-- Contenido solo para el grupo GUARDIA Y ADMINISTRADOR-->
+                        <li class="nav-item">
+                            <a href="{% url 'adminFuncionario' %}" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>Funcionario</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if request.user.groups.all.0.name == "VISITANTE" %}
+                        <!-- Contenido solo para el grupo VISITANTE -->
+                        <li class="nav-item">
+                            <a href="{% url 'solicitudes_visitante' %}" class="nav-link">
+                                <i class="nav-icon fas fa-columns"></i>
+                                <p>Solicitudes</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if request.user.groups.all.0.name == "FUNCIONARIO"  or request.user.groups.all.0.name == "GUARDIA" %}
+                        <!-- Contenido solo para el grupo FUNCIONARIO -->
+                        <li class="nav-item">
+                            <a href="{% url 'funcionario_solicitud' %}" class="nav-link">
+                                <i class="nav-icon fas fa-columns"></i>
+                                <p>Solicitudes</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if request.user.groups.all.0.name == "GUARDIA" or user.is_superuser %}
+                        <!-- Contenido solo para el grupo GUARDIA Y ADMINISTRADOR-->
+                        <li class="nav-item">
+                            <a href="http://192.168.1.18" class="nav-link">
+                                <i class="nav-icon fas fa-expand"></i>
+                                <p>Escáner</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'historial' %}" class="nav-link">
+                                <i class="nav-icon fas fa-rotate-right"></i>
+                                
+                                <p>
+                                    Registro de visitas
+                                </p>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+        {% block content %}
+            
+        {% endblock %}     
+        <footer class="main-footer nuevo-footer">
+            <div class="float-right d-none d-sm-block">
+                <b>Version</b> 3.2.0
+            </div>
+            Universidad Estatal de Milagro - Todos los derechos reservados - UNEMI 2023
+        </footer>
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- jQuery -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Select2 -->
+    <script src="{% static 'js/select2/js/select2.full.min.js' %}"></script>
+
+    <!-- DataTables  & Plugins -->
+    <script src="{% static 'js/datatables/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/datatables/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'js/datatables/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'js/datatables/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'js/datatables/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'js/datatables/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'js/datatables/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'js/datatables/datatables-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'js/datatables/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+
+    <!-- bs-custom-file-input -->
+    <script src="{% static 'js/bs-custom-file-input/bs-custom-file-input.min.js' %}"></script>
+
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+    <!-- AdminLTE App -->
+    <script src="{% static 'js/adminlte.min.js' %}"></script>
+
+    <script src="https://kit.fontawesome.com/26084d939f.js" crossorigin="anonymous"></script>
+
+    <!-- SweetAlert2 para alertas atractivas -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                // Personalizar la alerta según el tipo de mensaje
+                {% if message.tags == 'success' %}
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: "{{ message }}",
+                        width: 400,
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                {% elif message.tags == 'warning' %}
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Advertencia',
+                        text: "{{ message }}",
+                    });
+                {% elif message.tags == 'error' %}
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: "{{ message }}",
+                    });
+                {% else %}
+                    // En caso de que el mensaje no tenga una etiqueta específica, mostrarlo como informativo
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Información',
+                        text: "{{ message }}",
+                    });
+                {% endif %}
+            </script>
+        {% endfor %}
+    {% endif %}
+
+    <script>
+        // Función para mostrar la alerta de confirmación antes de eliminar un dato
+        function confirmarEliminacion(url) {
+            Swal.fire({
+                icon: 'warning',
+                title: '¿Estás seguro?',
+                text: 'Esta acción eliminará el dato de forma permanente.',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si el usuario confirma, redireccionar a la URL de eliminación
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
+    {% block datatables %}
+            
+    {% endblock %}
+    <script>
+        //Initialize Select2 Elements
+        $('.select2').select2()
+        
+        $(function () {
+          bsCustomFileInput.init();
+          
+        });   
+    </script>
+
+</body>
+</html>

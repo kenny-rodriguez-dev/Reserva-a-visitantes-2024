@@ -1,0 +1,171 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% block title %}Registro Horario{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Registrar Horario</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'adminInicio' %}">Home</a></li>
+                        <li class="breadcrumb-item active">Registro Horario</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Modal Nuevo Horario -->
+            <div class="modal fade" id="modal-default">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Nuevo Horario</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Formulario de Registro -->
+                            <form id="registroForm" action="/registroHorario/" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <!-- Horario -->
+                                <div class="form-group">
+                                    <label>Horario Inicio</label>
+                                    <div class="input-group date" id="horaInicio" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input" name="horaInicio" id="horaInicio" data-target="#horaInicio" required/>
+                                        <div class="input-group-append" data-target="#horaInicio" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="far fa-clock"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Horario Fin</label>
+                                    <div class="input-group date" id="horaFin" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input" name="horaFin" id="horaFin" data-target="#horaFin" required />
+                                        <div class="input-group-append" data-target="#horaFin" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="far fa-clock"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer ">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                </div>
+                            </form>
+                            <!-- Fin del Formulario de Registro -->
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Horario Inicio</th>
+                                <th>Horario Fin</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for h in horarios %}
+                            <tr>
+                                <td class="text-center pt-3">{{forloop.counter}}</td>
+                                <td class="pt-3">{{h.HorarioInicio}}</td>
+                                <td class="pt-3">{{h.HorarioFin}}</td>
+                                <td class="text-center pt-3">
+                                    {% if h.estado %}
+                                    <span class="badge bg-success">Activo</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Inactivo</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center py-0 align-middle">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="/edicionHorario/{{h.id}}" class="btn btn-success"><i
+                                                class="fas fa-pencil-alt"></i></a>
+                                        <a href="#" onclick="confirmarEliminacion('/eliminarHorario/{{h.id}}')" class="btn btn-danger" class="btn btn-danger"><i
+                                                class="fas fa-trash"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+{% endblock %}
+
+{% block datatables %}
+
+<script>
+    $(function () {
+        // Configuración de DataTable
+        $("#example1").DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "buttons": ["copy"],
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "lengthMenu": [[5, 10, 25, 50,], [5, 10, 25, 50,]],
+            "pageLength": 5,
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+        // Ocultar todos los botones excepto el botón "colvis"
+        $('div.dt-buttons > button').not('.buttons-colvis').css('display', 'none');
+
+        // Agregar el botón "Nuevo Horario" al lado del botón "Imprimir"
+        $("<button type='button' class='btn btn-warning text-white btn-sm' id='btnNuevoHorario'>" +
+            "<i class='nav-icon far fa-clock mr-2'></i>Nuevo Horario" +
+            "</button>").insertAfter('#example1_wrapper .col-md-6:eq(0) .btn-group .btn:last-child');
+
+        // Agregar la lógica para abrir el modal al hacer clic en el botón "Nuevo Horario"
+        $('#btnNuevoHorario').on('click', function () {
+            $('#modal-default').modal('show');
+        });
+
+        // Obtener el contenedor de botones
+        var buttonContainer = $("#example1_wrapper .col-md-6:eq(0)").find('.btn-group');
+
+        // Quitar la clase 'btn-group' de todos los botones
+        buttonContainer.removeClass('btn-group');
+
+        // Agregar la clase 'btn' a cada botón
+        buttonContainer.find('button').addClass('btn btn-round');
+
+        // Añadir un margen a los botones para separarlos
+        buttonContainer.find('button').css('margin-right',);
+
+        //Date picker
+        $('#horaInicio').datetimepicker({
+            format: 'LT'
+        });
+        $('#horaFin').datetimepicker({
+            format: 'LT'
+        });
+    });
+</script>
+{% endblock %}

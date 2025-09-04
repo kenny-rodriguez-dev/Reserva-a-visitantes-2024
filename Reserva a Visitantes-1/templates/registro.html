@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registro Visitante</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="{% static 'css/icheck-bootstrap.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+  <!-- SweetAlert2 para alertas atractivas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+  <style>
+    .password-container {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+
+    .error-message {
+        color: red;
+    }
+  </style>
+  
+</head>
+<body class="hold-transition register-page">
+<div class="register-box" style="padding-top: 60px;padding-bottom: 30px;">
+  <div class="card card-outline card-primary">
+    <div class="card-header text-center">
+      <a href="../../index2.html" class="h1"><b>Admin</b>LTE</a>
+    </div>
+    <div class="card-body">
+      <p class="login-box-msg">Registrate y agenda tu visita</p>
+      <form action="/registroVisitante/" method="post" onsubmit="return validateForm()"enctype="multipart/form-data">{% csrf_token %}
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Escribe tu Nombre" pattern="[^0-9]*" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="apellido" id="apellido" placeholder="Escribe tu Apellido" pattern="[^0-9]*" required >
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="cedula" id="cedula" placeholder="Digita tu Nº de Cedula" pattern="^[0-9999999999]+" maxlength="10" minlength="10" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-id-card"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="email" class="form-control" name="email" id="email" placeholder="Escribe tu Email"  required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="celular" id="celular" placeholder="Digita tu Nº Celular" pattern="^[0-9999999999]+" maxlength="10" minlength="10" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-mobile-alt"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="ciudad" id="ciudad" placeholder="Escribe tu Ciudad de Residencia" pattern="[^0-9]*" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-city"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+          <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña" required>
+          <span class="toggle-password" onclick="togglePasswordVisibility('password')">Mostrar</span>
+        </div>
+        <div class="input-group mb-3">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+          <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Repite la Contraseña" required>
+          <span class="toggle-password " onclick="togglePasswordVisibility('confirmPassword')">Mostrar</span>
+        </div>
+        <p class="error-message" id="passwordError"></p>
+        <div class="input-group mb-3">
+          <p for="formFile"  style="margin-top: -5px;">Selecciona una imagen para tu perfil...</p>
+          <div class="input-group mb-3">
+            <input class="form-control" type="file" name='avatar' id='avatar'  placeholder="Selecciona una imagen para tu perfil" required> 
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-camera"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <!-- /.col -->
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-block">Registrate</button>
+          </div>
+          <!-- /.col -->
+        </div>
+        <script>
+          function togglePasswordVisibility(fieldId) {
+            var passwordInput = document.getElementById(fieldId);
+            var toggleButton = document.querySelector(".toggle-password");
+      
+            if (passwordInput.type === "password") {
+              passwordInput.type = "text";
+              toggleButton.textContent = "Ocultar";
+            } else {
+              passwordInput.type = "password";
+              toggleButton.textContent = "Mostrar";
+            }
+          }
+      
+          function validateForm() {
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+            var passwordError = document.getElementById("passwordError");
+      
+            if (password !== confirmPassword) {
+              passwordError.textContent = "Las contraseñas no coinciden.";
+              return false;
+            } else {
+              passwordError.textContent = "";
+              return true;
+            }
+          }
+      </script>
+      </form>
+      <a href="{% url 'login' %}" class="text-center">Ya tengo una cuenta</a>
+    </div>
+    <!-- /.form-box -->
+  </div><!-- /.card -->
+</div>
+<!-- /.register-box -->
+
+<!-- jQuery -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'js/adminlte.min.js' %}"></script>
+<script src="https://kit.fontawesome.com/26084d939f.js" crossorigin="anonymous"></script>
+<!-- SweetAlert2 para alertas atractivas -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+{% if messages %}
+    {% for message in messages %}
+        <script>
+            // Personalizar la alerta según el tipo de mensaje
+            {% if message.tags == 'success' %}
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: "{{ message }}",
+                    width: 400,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            {% elif message.tags == 'warning' %}
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Advertencia',
+                    text: "{{ message }}",
+                });
+            {% elif message.tags == 'error' %}
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "{{ message }}",
+                });
+            {% else %}
+                // En caso de que el mensaje no tenga una etiqueta específica, mostrarlo como informativo
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Información',
+                    text: "{{ message }}",
+                });
+            {% endif %}
+        </script>
+    {% endfor %}
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,21 @@
+.nuevo{
+    background-color: #1C3247 !important;
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none; 
+  }
+
+.brand-image {
+    width: 100px; 
+    height: auto; 
+    margin-right: 10px; 
+}
+
+.nuevo-footer {
+    background-color: #E4EDF5;
+}
+

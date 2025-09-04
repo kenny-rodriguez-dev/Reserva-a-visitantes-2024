@@ -1,0 +1,24 @@
+# Archivos de entorno y credenciales
+.env
+
+# Directorios y archivos de Python
+__pycache__/
+*.pyc
+*~
+
+# Entornos virtuales
+venv/
+.venv/
+
+# Archivos de base de datos
+db.sqlite3
+*.sql
+
+# Archivos del sistema
+.DS_Store
+
+# Archivos de IDE (VS Code)
+.vscode/
+
+# Archivos subidos por los usuarios
+/media/

@@ -1,0 +1,56 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% block title %}Edcion Cargo{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Editar Cargo</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'adminInicio' %}">Home</a></li>
+                        <li class="breadcrumb-item active">Editar Cargo</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">     
+            <div class="card">
+                <div class="card-body">
+                    <form  action="/editarCargo/" method="post"
+                            enctype="multipart/form-data">{% csrf_token %}
+                            <div class="row d-none">
+                                <div class="form-group">
+                                    <label for="" class="d-none">ID</label>
+                                    <input type="text" name="funcionarioid" id="funcionarioid" class="form-control d-none" value="{{cargo.id }}" readonly required>
+                                </div>
+                            </div>
+                            <!-- Nombre y Apellido -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Nombre</label>
+                                        <input type="text" class="form-control" name="nombres" id="nombres" value="{{ cargo.nombre|title }}" pattern="[^0-9]*" required>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <a href="{% url 'adminCargo' %}" class="btn btn-secondary">Cerrar</a>
+                            <button type="submit" class="btn btn-primary">Actualizar</button>
+                    </form>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+{% endblock %}

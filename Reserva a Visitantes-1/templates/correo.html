@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Reunión</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            margin-bottom: 5px;
+        }
+
+        .qr-code {
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ccc;
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header" style="text-align: center; margin-bottom: 20px;">
+            <span style="display: inline-block; background-color: #1C3247; color: #fff; padding: 2px; border-radius: 5px; font-size: 50px; font-weight: bold; max-width: 180px;">
+                UNEMI
+            </span>
+        </div>
+        
+        <div class="content">
+            <p>Estimad@ {{visitante}}</p>
+            <p>Su solicitud para una reunión con el {{cargo}} {{funcionario}} se ha {{estado}}. Recuerde que la reunión
+                es el día {{fecha_reserva}} en el horario de {{hora_inicio}} a {{hora_fin}}.</p>
+            <p>Además, se adjunta el respectivo código QR que debe presentar para el ingreso a la institución.</p>
+        </div>
+        <div class="qr-code">
+            <img src="cid:qr_image" alt="Código QR" style="max-width: 300px; display: block; margin: 0 auto;">
+        </div>
+        <div class="footer">
+            Universidad Estatal de Milagro - Todos los derechos reservados - UNEMI 2023
+        </div>
+    </div>
+
+</body>
+
+</html>

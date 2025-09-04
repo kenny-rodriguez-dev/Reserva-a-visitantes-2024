@@ -1,0 +1,582 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% block title %}Registro Solicitud{% endblock %}
+{% block estilo %}
+<style>
+    .past-day,
+    .current-day,
+    .weekend {
+        opacity: 0.6;
+        pointer-events: none;
+        /* Deshabilita la interacción del usuario */
+    }
+    
+    .clickable-day {
+        cursor: pointer;
+        border: 3px solid #66B0FF !important;
+    }
+
+    .dia-seleccionado {
+        background-color: #007bff;
+        color: #FFF;
+        font-weight: bold;
+        border: 3px solid #007bff !important;
+
+    }
+    .dia-no-disponible {
+        pointer-events: none; /* Deshabilita la interacción del usuario */
+        border: 3px solid #ffc107 !important;
+        opacity: 0.6;
+    }
+
+    .diax {
+        background-color: #FFF;
+        color: black;
+    }
+    .past-day h4,
+    .current-day h4,
+    .weekend h4 {
+        border: 3px solid gray !important;
+    }
+    .color1 {
+        color: #B3B3B3;
+    }
+    .color2 {
+        color: #66B0FF;
+    }
+    .color3 {
+        color: #FFDA6A;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-sm-6">
+                    <h1>Registrar Datos de la Visita</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                        <li class="breadcrumb-item active">Registro Solicitud</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            {% if request.user.groups.all.0.name == "VISITANTE"  or user.is_superuser %}
+                <form id="registroForm" action="/registroSolicitud/" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% else %}
+                <form id="registroForm" action="/registroAgendamiento/" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% endif %}  
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-6">
+                        <!-- general form elements -->
+                        <div class="card card-primary">
+                            <!-- /.card-header -->
+                            <!-- form start -->
+                                <div class="card-body">
+                                    {% if request.user.groups.all.0.name == "VISITANTE"  or user.is_superuser %}
+                                        <div class="form-group">
+                                            <label>Funcionario</label>
+                                            <select id="funcionario" name="funcionario" class="form-control select2" size="3" required>
+                                                <option value="" disabled selected>-- Buscar funcionario --</option>
+                                                {% for f in listaFuncionarios %}
+                                                <option value="{{ f.id }}">
+                                                    {{ f.id_persona.nombres|title }} {{ f.id_persona.apellidos|title }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% else %}
+                                        <div class="form-group">
+                                            <label>Funcionario</label>
+                                            <select id="funcionario" name="funcionario" class="form-control select2" size="3" required>
+                                                <option value="" disabled selected>-- Confirma tus Datos --</option>
+                                                {% for f in listaFuncionarios %}
+                                                    {% for u in listaUsuarios %}
+                                                        {% if u.username == user.username  %}
+                                                            {% if u.id_persona.id == f.id_persona.id  %}
+                                                            <option value="{{ f.id }}">{{ f.id_persona.nombres|title }} {{ f.id_persona.apellidos|title }}</option>
+                                                            {% else %}
+                                                            {% endif %}
+                                                        {% else %}
+                                                        {% endif %}  
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endif %} 
+                                    <div class="container">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="btn input-group-text anterior"><i
+                                                        class="fas fa-chevron-left"></i></span>
+                                            </div>
+                                            <h3 id="mesAno" class="form-control text-center font-weight-bold ">Octubre 2023
+                                            </h3>
+                                            <div class="input-group-append">
+                                                <button class="btn input-group-text siguiente"><i
+                                                        class="fas fa-chevron-right"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="row ">
+                                            <div class="col d-flex justify-content-center">
+                                                <h6>DOM</h6>
+                                            </div>
+                                            <div class="col d-flex justify-content-center">
+                                                <h6>LUN</h6>
+                                            </div>
+                                            <div class="col d-flex justify-content-center">
+                                                <h6>MAR</h6>
+                                            </div>
+                                            <div class="col d-flex justify-content-center">
+                                                <h6>MIE</h6>
+                                            </div>
+                                            <div class="col d-flex justify-content-center">
+                                                <h6>JUE</h6>
+                                            </div>
+                                            <div class="col d-flex justify-content-center">
+                                                <h6>VIE</h6>
+                                            </div>
+                                            <div class="col d-flex justify-content-center">
+                                                <h6>SAB</h6>
+                                            </div>
+                                        </div>
+                                        <div class="calendario">
+                                        </div>
+                                    </div>
+                                    <div class="bg-light p-3 rounded mt-3 text-center">
+                                        <i class="color1 fas fa-times-circle"></i><small class="pr-2"> Sin
+                                            horarios</small>
+                                        <i class="color2 fas fa-check-circle"></i><small
+                                            class="pr-2"> Disponible</small>
+                                        <i class="color3 fas fa-exclamation-circle"></i><small
+                                            class="pr-2"> Agotado</small>
+                                    </div>
+                                </div>
+                                <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                    <!--/.col (left) -->
+                    <!-- right column -->
+                    <div class="col-md-6">
+                        <!-- Form Element sizes -->
+                        <div class="card ">
+                            <div class="card-body">
+                                <label>Detalle de la solicitud</label><br>
+                                <input type="text" class="form-control d-none" name="fecha" id="fecha" value="" readonly required>
+                                <input type="text" class="form-control d-none" name="horario" id="horario" value=""  required>
+                                
+                                {% if request.user.groups.all.0.name == "VISITANTE"  or user.is_superuser %}
+                                  <input type="text" class="form-control d-none" name="visitante" id="visitante" value="{{ user.username }}" readonly required>
+                                {% else %}
+                                    <div class="form-group">
+                                        <label>Visitante</label>
+                                        <select id="visitante" name="visitante" class="form-control select2" size="3" required>
+                                            <option value="" readonly disabled selected>-- Seleccione un Visitante --</option>
+                                            {% for v in listaVisitantes %}
+                                            <option value="{{ v.id_persona.email}}">
+                                                {{ v.id_persona.nombres|title }} {{ v.id_persona.apellidos|title }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}  
+                                  <div class="contenedor" id="seccionInicial">
+                                    <div class="box-reserva border border-secondary rounded p-5 text-center">
+                                        <div class="p-5">
+                                            <h4 class="text-secondary text-md">Este campo se habilitará al momento de seleccionar un funcionario</h4>
+                                        </div>                      
+                                    </div>
+                                </div>
+                                <div class="turno row" id="seccionTurno">                   
+                                    <!-- Botones de los turnos disponibles -->
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Motivo de la solicitud</label>
+                                    <textarea class="form-control" id="motivo" name="motivo" rows="3" placeholder="Ingrese el motivo de la solicitud..." required></textarea>
+                                </div>
+                                <div class="div pt-2">
+                                    <button type="submit" class="btn btn-primary  btn-block">Agendar Turno</button>
+                                </div>
+                            </div>
+                        </div>        
+                        <!-- /.card -->
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block datatables %}
+
+<script>
+    // Declaración de la variable global
+    let fechasNoDisponibles = [];
+    let diasNoDisponibles = [];
+    // Objeto para organizar las fechas
+    let fechasOrganizadas = {};
+    // Variables para almacenar la fecha actual, mes actual y año actual
+    let fechaActual = new Date();
+    let mesActual = fechaActual.getMonth();
+    let añoActual = fechaActual.getFullYear();
+    let diaActual = fechaActual.getDate();
+    console.log("Día actual:", diaActual);
+
+    function organizarFechas(fechasDelServidor) {
+        // Validar si fechasDelServidor no está vacío
+        if (fechasDelServidor.length > 0) {
+            // Recorrer las fechas y organizarlas en el objeto
+            fechasDelServidor.forEach(fechaStr => {
+                const fecha = new Date(fechaStr + "T00:00:00Z"); // Agrega la hora y define la zona horaria como UTC
+                const año = fecha.getUTCFullYear();
+                const mes = fecha.getUTCMonth() + 1; // Sumar 1 porque los meses van de 0 a 11 en JavaScript
+                const dia = fecha.getUTCDate();
+
+                // Si el año no existe en el objeto, agregarlo con un objeto vacío como valor
+                if (!fechasOrganizadas[año]) {
+                    fechasOrganizadas[año] = {};
+                }
+
+                // Si el mes no existe en el objeto del año, agregarlo con un array vacío como valor
+                if (!fechasOrganizadas[año][mes]) {
+                    fechasOrganizadas[año][mes] = [];
+                }
+
+                // Agregar el día al array correspondiente
+                fechasOrganizadas[año][mes].push(dia);
+            });
+
+            console.log(fechasOrganizadas);
+        } else {
+            console.log("La lista de fechas del servidor está vacía.");
+        }
+    }
+
+    // Función que devuelve el número de días en un mes para un año dado
+    function cantidadDiasMes(month, year) {
+        return new Date(year, month + 1, 0).getDate();
+    }
+
+    // Función para generar y mostrar el calendario en el HTML
+    function generarCalendario(mes, año, fechas, diaActual) {
+        // console.log('Generando calendario para mes:', mes, 'y año:', año);
+        // console.log('Dias no disponibles generando el calendario:', fechas);
+        
+        // Vacía el contenido del elemento HTML con la clase "calendario"
+        $(".calendario").empty();
+
+        // Obtiene el primer día de la semana y el número total de días en el mes
+        let primerDia = new Date(año, mes, 1).getDay();
+        let numDias = cantidadDiasMes(mes, año);
+
+        // Crea un elemento de fila para organizar los días del mes
+        let $fila = $("<div class='row'></div>");
+        $(".calendario").append($fila);
+
+        // Añade espacios en blanco para los días previos al primer día del mes
+        for (let i = 0; i < primerDia; i++) {
+            let $espacioEnBlanco = $("<div class='col text-center mt-1'><h4 class='py-1'>&nbsp;</h4></div>");
+            $fila.append($espacioEnBlanco);
+        }
+
+        // Genera y muestra los días del mes
+        for (let i = 1; i <= numDias; i++) {
+            
+            let $dia = $("<div class='col text-center mt-1'></div>");
+
+            // Verificar si fechas no está vacío
+            if (fechas && Object.keys(fechas).length > 0) {
+                console.log('😢')
+                let mess = mes + 1
+                if (Object.keys(fechas).includes(año.toString()) && fechas[año].hasOwnProperty(mess.toString())) {
+                    let diasDelMes = fechas[año][mess];
+                    if (diasDelMes.includes(i)) {
+                        $dia.append("<h4 class=' rounded py-1 dia-no-disponible'>" + i + "</h4>");
+                    } else {
+                        $dia.append("<h4 class='border border-primary rounded py-1 clickable-day'>" + i + "</h4>");
+                    }
+                } else {
+                    // console.log('El objeto fechas está vacío.');
+                    $dia.append("<h4 class='border border-primary rounded py-1 clickable-day'>" + i + "</h4>");
+                }
+            } else {
+                // console.log('El objeto fechas está vacío.');
+                $dia.append("<h4 class='border border-primary rounded py-1 clickable-day'>" + i + "</h4>");
+            }
+            // Agrega clases para resaltar fines de semana, días pasados y el día actual
+            if ((i + primerDia) % 7 === 1 || (i + primerDia) % 7 === 0) {
+                
+                
+                $dia.addClass("weekend");
+            }
+            
+            if (new Date(año, mes, i) < fechaActual) {
+                // Luego, en algún lugar del código donde desees quitar la clase 'dia-no-disponible', puedes hacer lo siguiente:
+                $dia.find('.dia-no-disponible').addClass('diax')
+                $dia.find('.dia-no-disponible').removeClass('dia-no-disponible');
+                $dia.addClass("past-day");
+            }
+
+            if (i === fechaActual.getDate() && mes === fechaActual.getMonth() && año === fechaActual.getFullYear()) {
+                $dia.addClass("current-day");
+            }
+                
+            $fila.append($dia);
+
+            // Crea nuevas filas para organizar los días del calendario
+            if ((i + primerDia) % 7 === 0 && i !== numDias) {
+                $fila = $("<div class='row'></div>");
+                $(".calendario").append($fila);
+            }
+        }
+
+        // Verifica si la última semana del mes es completa y, si no lo es, añade espacios en blanco
+        let ultimaSemanaCompleta = (numDias + primerDia) % 7 === 0;
+        if (!ultimaSemanaCompleta) {
+            let diasRestantes = 7 - ((numDias + primerDia) % 7);
+            for (let i = 0; i < diasRestantes; i++) {
+                let $espacioEnBlanco = $("<div class='col text-center mt-1'><h4 class='rounded py-1'>&nbsp;</4></div>");
+                $fila.append($espacioEnBlanco);
+            }
+        }
+
+        // Actualiza el elemento con el ID "mesAno" con el nombre del mes y el año
+        $("#mesAno").text(getNombreMes(mes) + " " + año);
+    }
+
+    // Función que devuelve el nombre de un mes basándose en el índice del mes
+    function getNombreMes(mes) {
+        let meses = [
+            "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
+        return meses[mes];
+    }
+
+    // Genera y muestra el calendario para el mes y año actuales
+    generarCalendario(mesActual, añoActual, fechasOrganizadas, diaActual);
+
+    // Variable para almacenar el funcionario seleccionado
+    let funcionarioSeleccionado;
+
+    // Maneja el cambio en la selección del funcionario
+    $("#funcionario").change(function() {
+        // Obtén el ID del funcionario seleccionado
+        funcionarioSeleccionado = $(this).val();
+        // Elimina la clase seleccionada de cualquier otro díaobtenerHorariosFuncionario
+        $(".clickable-day").removeClass("dia-seleccionado");
+        
+        $("#seccionTurno").hide();
+        $("#seccionInicial").show();
+        // Puedes imprimir el ID del funcionario seleccionado en la consola para verificar
+        //console.log("ID del funcionario seleccionado: " + funcionarioSeleccionado);
+        
+        // Llama a la función para obtener las fechas disponibles del funcionario
+        obtenerFechasFuncionario(funcionarioSeleccionado);
+    });
+    
+    function obtenerFechasFuncionario(idFuncionario) {
+        // Realizar solicitud al servidor Django
+        fetch('/obtener_fechas_funcionario/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: 'id_funcionario=' + encodeURIComponent(idFuncionario),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Manejar la respuesta del servidor (en este caso, imprimir las fechas en la consola)
+            // Manejar la respuesta del servidor
+            if (data.success) {
+                // // Imprimir las fechas en la consola
+                // console.log('awrfergerwgwer', data.fechas)
+                // // Antes de almacenar las fechas, parsea cada fecha a un objeto Date
+                // fechasNoDisponibles = data.fechas.map(fechaStr => new Date(fechaStr));
+                // // Antes de almacenar las fechas, parsea cada fecha a un objeto Date y obtén el número del día
+                // diasNoDisponibles = data.fechas.map(fechaStr => {
+                //     const fecha = new Date(fechaStr + "T00:00:00Z"); // Agrega la hora y define la zona horaria como UTC
+                //     return fecha.getUTCDate();
+                // });
+                fechasOrganizadas = {};
+                organizarFechas(data.fechas);
+                
+                // console.log('Fechas dias recibidas:', diasNoDisponibles);
+                // console.log(typeof(fechasOrganizadas))
+                // console.log('año',Object.keys(fechasOrganizadas))
+                // console.log('tipo', parseInt(Object.keys(fechasOrganizadas)))
+                // console.log('meseeees', fechasOrganizadas[0] )
+                // let anio = 2023
+                // let m = mesActual + 1
+                // console.log('mesactualllllllllll', m)
+                // let d = 7
+                // if (Object.keys(fechasOrganizadas).includes(anio.toString()) && fechasOrganizadas[anio].hasOwnProperty(m.toString())) {
+                //     console.log(`El número ${m} está incluido en las claves del año ${anio} en fechasOrganizadas.`);
+                // } else {
+                //     console.log(`El número ${m} no está incluido en las claves del año ${anio} en fechasOrganizadas.`);
+                // }
+
+                // if (Object.keys(fechasOrganizadas).includes(anio.toString()) && fechasOrganizadas[anio].hasOwnProperty(m.toString())) {
+                //     let diasDelMes = fechasOrganizadas[anio][m];
+                    
+                //     if (diasDelMes.includes(d)) {
+                //         console.log(`El número ${d} está incluido en el array de días del mes ${m} en el año ${anio} en fechasOrganizadas.`);
+                //     } else {
+                //         console.log(`El número ${d} no está incluido en el array de días del mes ${m} en el año ${anio} en fechasOrganizadas.`);
+                //     }
+                // } else {
+                //     console.log(`El año ${anio} o el mes ${m} no están presentes en las claves de fechasOrganizadas.`);
+                // }
+
+                // console.log('😎', typeof(añoActual))
+                
+                // console.log('fechaaaaaaaaaaaa', fechasOrganizadas)
+                // Llama a la función para generar el calendario con las fechas no disponibles
+                generarCalendario(mesActual, añoActual, fechasOrganizadas,diaActual);
+                console.log('Calendario generado exitosamente.');
+            } else {
+                console.error('Error:', data.error_message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function obtenerHorariosFuncionario(idFuncionario,fecha) {
+        console.log(idFuncionario)
+        // Realizar solicitud al servidor Django
+        fetch('/obtener_horarios_funcionario/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: 'id_funcionario=' + encodeURIComponent(idFuncionario)+ '&fecha=' + encodeURIComponent(fecha),
+                  
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Manejar la respuesta del servidor (en este caso, imprimir los horarios en la consola)
+            console.log(data);
+            // Manejar la respuesta del servidor
+            if (data.success) {
+                // Limpiar los botones actuales
+                limpiarBotonesTurno();
+
+                // Crear botones basados en los horarios obtenidos
+                data.horarios.forEach(horario => {
+                    crearBotonTurno(horario.inicio, horario.fin);
+                });
+            } else {
+                console.error('Error:', data.error_message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Función para limpiar los botones de turno existentes
+    function limpiarBotonesTurno() {
+        const turnoContainer = document.querySelector('.turno');
+        turnoContainer.innerHTML = '';  // Limpiar contenido actual
+    }
+
+    // Función para crear un botón de turno
+    function crearBotonTurno(horaInicio, horaFin) {
+        const turnoContainer = document.querySelector('.turno');
+
+        // Crear el botón y la columna
+        const nuevaColumna = document.createElement('div');
+        nuevaColumna.className = 'col-md-6 mt-2';
+
+        const nuevoBoton = document.createElement('button');
+        nuevoBoton.type = 'button';
+        nuevoBoton.className = 'btn btn-block time-btn btn-secondary';
+        nuevoBoton.innerText = 'De ' + horaInicio + ' a ' + horaFin;
+
+        // Agregar el botón a la columna y la columna al contenedor
+        nuevaColumna.appendChild(nuevoBoton);
+        turnoContainer.appendChild(nuevaColumna);
+    }
+    // Variable para almacenar la fecha seleccionada
+    let fechaFormateada;
+
+    // Maneja el clic en los elementos clickeables del día del calendario
+    $(document).on("click", ".clickable-day", function () {
+        // Elimina la clase seleccionada de cualquier otro díaobtenerHorariosFuncionario
+        $(".clickable-day").removeClass("dia-seleccionado");
+        let diaSeleccionado = $(this).text();
+        let fechaSeleccionada = new Date(añoActual, mesActual, diaSeleccionado);
+
+        // Formatea la fecha en el formato yy-mm-dd
+        fechaFormateada = fechaSeleccionada.getFullYear().toString().substring(2) + '-' +
+            ('0' + (fechaSeleccionada.getMonth() + 1)).slice(-2) + '-' +
+            ('0' + fechaSeleccionada.getDate()).slice(-2);
+       
+        console.log(fechaFormateada)
+        $("#fecha").val(fechaFormateada);
+        // Llama a la función para obtener los horarios del funcionario
+        obtenerHorariosFuncionario(funcionarioSeleccionado, fechaFormateada);
+        // Oculta la seccion inical despues de seleccionar un funcionario y muestra lo seccion de los turnos
+        $("#seccionInicial").hide();
+        $("#seccionTurno").show();
+        // Agrega la clase seleccionada al día actual
+        $(this).addClass("dia-seleccionado");        
+    });
+
+    // Maneja el clic en los botones de turno
+    $(document).on("click", ".time-btn", function () {
+        // Obtén la hora de inicio y fin del turno seleccionado
+        let horaInicioFin = $(this).text().split(" a ");
+        let horaInicio = horaInicioFin[0];
+        let horaFin = horaInicioFin[1];
+
+        // Muestra la hora de inicio y fin por consola
+        console.log("Hora de inicio:", horaInicio);
+        console.log("Hora de fin:", horaFin);
+
+        // Actualiza el valor del input #horario con la información del horario seleccionado
+        let horarioSeleccionado = horaInicio + " a " + horaFin;
+        $("#horario").val(horarioSeleccionado);
+    });
+    
+    // Maneja el clic en el botón "anterior" para navegar al mes anterior
+    $(".anterior").click(function (event) {
+        event.preventDefault();
+        mesActual--;
+        if (mesActual < 0) {
+            mesActual = 11;
+            añoActual--;
+        }
+        generarCalendario(mesActual, añoActual,fechasOrganizadas,diaActual);
+    });
+
+    // Maneja el clic en el botón "siguiente" para navegar al mes siguiente
+    $(".siguiente").click(function (event) {
+        event.preventDefault();
+        mesActual++;
+        if (mesActual > 11) {
+            mesActual = 0;
+            añoActual++;
+        }
+        generarCalendario(mesActual, añoActual, fechasOrganizadas,diaActual);
+    });
+</script>
+{% endblock %}

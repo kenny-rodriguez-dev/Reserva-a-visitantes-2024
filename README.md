@@ -6,7 +6,7 @@
 
 
 
-\*\*Reserva a visitantes\*\* es un prototipo de una aplicación web completa (Full-Stack) diseñada para gestionar y automatizar el proceso de reserva y registro de visitantes en una institución. El sistema permite a los funcionarios agendar visitas para invitados, quienes reciben notificaciones por correo electrónico con un código QR único. Este código QR es utilizado para registrar la entrada y salida, simplificando y securizando el acceso.
+\*\*Reserva a visitantes\*\* es un prototipo de una aplicación web completa (Full-Stack) diseñada para gestionar y automatizar el proceso de reserva y registro de visitantes en una institución. El sistema permite a los funcionarios agendar visitas para invitados, quienes reciben notificaciones por correo electrónico con un código QR único. Este código QR es utilizado para registrar la entrada y salida, simplificando y asegurando el acceso.
 
 
 
@@ -47,10 +47,9 @@
 Este proyecto fue construido con las siguientes tecnologías:
 
 
+\* \*\*Frontend\*\*: HTML, CSS (AdminLTE), JavaScript
 
 \* \*\*Backend\*\*: Python, Django 4.2.6
-
-\* \*\*Frontend\*\*: HTML, CSS (AdminLTE), JavaScript
 
 \* \*\*Base de Datos\*\*: PostgreSQL
 
@@ -72,7 +71,7 @@ Este proyecto fue construido con las siguientes tecnologías:
 
 
 
-Sigue estos pasos para configurar y ejecutar el proyecto en tu máquina local:
+Siga estos pasos para configurar y ejecutar el proyecto en su máquina local:
 
 
 
@@ -80,7 +79,7 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu máquina local:
 
 &nbsp;   ```bash
 
-&nbsp;   git clone <URL\_del\_repositorio>
+&nbsp;   git clone \[https://github.com/su-usuario/reserva-a-visitantes-2024.git](https://github.com/su-usuario/reserva-a-visitantes-2024.git)
 
 &nbsp;   ```
 
@@ -88,43 +87,41 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu máquina local:
 
 2\.  \*\*Instalar dependencias\*\*:
 
-&nbsp;   Asegúrate de tener Python instalado. Navega a la carpeta del proyecto e instala los paquetes necesarios:
+&nbsp;   Asegúrese de tener Python instalado. Navegue a la carpeta del proyecto e instale los paquetes necesarios:
 
 &nbsp;   ```bash
 
-&nbsp;   pip install -r requirements.txt
+&nbsp;   pip install -r libreria.txt
 
 &nbsp;   ```
-
-&nbsp;   \*Nota: Si no tienes un archivo `requirements.txt`, puedes crearlo manualmente con las dependencias mencionadas en la sección anterior, como Django, python-dotenv, etc.\*
 
 
 
 3\.  \*\*Configurar variables de entorno\*\*:
 
-&nbsp;   Crea un archivo `.env` en la carpeta `solicitudes` y agrega tus credenciales de correo electrónico para las notificaciones:
+&nbsp;   Debe crear un archivo `.env` en la carpeta `solicitudes` y agregar sus credenciales de correo electrónico para las notificaciones:
 
 &nbsp;   ```
 
-&nbsp;   EMAIL = tu\_correo@gmail.com
+&nbsp;   EMAIL = su\_correo@gmail.com
 
-&nbsp;   PASSWORD\_EMAIL = tu\_contraseña\_de\_aplicación
+&nbsp;   PASSWORD\_EMAIL = su\_contraseña\_de\_aplicación
 
 &nbsp;   ```
 
-&nbsp;   \[cite\_start]\*Asegúrate de utilizar una contraseña de aplicación si tienes la verificación en dos pasos activada en tu cuenta de Google. \[cite: 1]\*
+&nbsp;   \*Asegúrese de utilizar una contraseña de aplicación si tiene la verificación en dos pasos activada en su cuenta de Google. \*
 
 
 
 4\.  \*\*Configurar la base de datos\*\*:
 
-&nbsp;   El proyecto utiliza PostgreSQL. Configura tu base de datos y actualiza el archivo `settings.py` con tus credenciales.
+&nbsp;   El proyecto utiliza PostgreSQL. Configure su base de datos y actualice el archivo `settings.py` con sus credenciales.
 
 
 
 5\.  \*\*Ejecutar migraciones\*\*:
 
-&nbsp;   Aplica las migraciones para crear las tablas de la base de datos:
+&nbsp;   Aplique las migraciones para crear las tablas de la base de datos:
 
 &nbsp;   ```bash
 
@@ -138,7 +135,7 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu máquina local:
 
 6\.  \*\*Crear superusuario\*\*:
 
-&nbsp;   Crea un usuario administrador para acceder al panel de administración de Django:
+&nbsp;   Debe crear un usuario administrador para acceder al panel de administración de Django:
 
 &nbsp;   ```bash
 
@@ -160,7 +157,7 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu máquina local:
 
 8\.  \*\*Acceder a la aplicación\*\*:
 
-&nbsp;   Abre tu navegador y ve a `http://127.0.0.1:8000/`.
+&nbsp;   Debe abrir su navegador y dirigirse a `http://127.0.0.1:8000/`.
 
 
 
@@ -172,7 +169,7 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu máquina local:
 
 
 
-Este es un \*\*prototipo de proyecto de portafolio\*\*. Si bien es funcional, está diseñado para demostrar mis habilidades técnicas en el desarrollo web Full-Stack.
+Este es un \*\*prototipo de proyecto de gestión para visitas\*\*. Si bien es funcional, está diseñado para demostrar mis habilidades técnicas en el desarrollo web Full-Stack.
 
 
 
@@ -181,6 +178,8 @@ Este es un \*\*prototipo de proyecto de portafolio\*\*. Si bien es funcional, es
 
 
 \* Kenny Rodríguez
+
+\* https://www.linkedin.com/in/kennyrodriguezm/
 
 
 
